@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>NETRUNNER // Interface Breach</title>
+<style>
+:root{color-scheme:dark;--bg:#071316;--panel:#0d2024;--panel2:#122a2e;--accent:#64eef0;--accent-rgb:100,238,240;--gold:#f4d06b;--text:#d7f3f0;--muted:#8caaac;--danger:#ff7175;--line:#325057;--glow:0 0 19px rgba(var(--accent-rgb),.17)}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -30%,#183e42 0%,var(--bg) 55%);color:var(--text);font-family:Consolas,"Courier New",monospace;letter-spacing:.03em}body:before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.055) 3px 4px);z-index:2}
+.shell{width:min(1120px,calc(100% - 32px));margin:34px auto 54px}.top{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}.eyebrow,.smalllabel{font-size:11px;font-weight:700;letter-spacing:.19em;color:var(--gold);text-transform:uppercase}h1{font-size:clamp(27px,4.5vw,45px);margin:8px 0 6px;letter-spacing:.10em;color:var(--accent);text-shadow:var(--glow)}.subtitle{font-size:13px;line-height:1.65;color:var(--muted);margin:0;max-width:760px}button,select,input{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}.topbuttons{display:flex;gap:9px;flex-wrap:wrap}.action{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:11px 16px;min-height:42px;text-transform:uppercase;font-size:12px;font-weight:700;letter-spacing:.08em;transition:.15s}.action:hover{background:rgba(var(--accent-rgb),.13)}.action.primary{background:var(--accent);color:#061519}.action.primary:hover{filter:brightness(1.12)}
+.dashboard{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(315px,.85fr);gap:18px;margin-top:23px}.panel{border:1px solid var(--line);background:linear-gradient(140deg,rgba(22,52,56,.68),rgba(9,29,33,.96));padding:21px;min-width:0;box-shadow:inset 0 1px rgba(255,255,255,.035)}.panelhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:16px}.paneltitle{color:var(--gold);font-size:15px;font-weight:700;letter-spacing:.11em}.hint{font-size:11px;color:var(--muted);text-align:right}.matrix{display:grid;grid-template-columns:repeat(var(--size,5),minmax(0,1fr));gap:8px;max-width:620px}.cell{aspect-ratio:1.08;min-width:0;background:rgba(20,48,52,.75);border:1px solid #3b6469;color:#a8c5c5;font-size:clamp(12px,2.1vw,22px);font-weight:700;transition:.12s}.cell:not(:disabled):hover{border-color:var(--gold);background:rgba(var(--accent-rgb),.17)}.cell.available{color:var(--accent);border-color:var(--accent);box-shadow:inset 0 0 10px rgba(var(--accent-rgb),.10)}.cell.used{color:#527174;border-color:#284447;background:#0b1c20;text-decoration:line-through;opacity:.7}.cell:disabled{cursor:default}.cell.selected{background:rgba(var(--accent-rgb),.23);border-color:var(--gold);color:var(--gold);text-decoration:none}.undergrid{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:15px;color:var(--muted);font-size:11px;line-height:1.5}.rightstack{display:grid;gap:18px;align-content:start}.buffer{display:flex;gap:6px;flex-wrap:wrap}.slot{width:48px;height:48px;display:grid;place-items:center;border:1px solid var(--line);background:rgba(4,15,18,.6);font-weight:700;color:#607b7f;font-size:15px}.slot.filled{border-color:var(--accent);color:var(--accent);box-shadow:var(--glow)}.targets{display:grid;gap:10px}.target{padding:12px;border:1px solid var(--line);background:rgba(5,18,21,.45)}.target.done{border-color:#8add93;background:rgba(55,120,67,.12)}.targetheader{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:var(--muted);margin-bottom:10px}.target.done .targetheader{color:#8add93}.tokens{display:flex;gap:7px;flex-wrap:wrap}.token{font-weight:700;color:var(--accent);border-bottom:1px solid var(--line);padding:3px 3px 6px;min-width:29px;text-align:center}.target.done .token{color:#8add93}.stats{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.timer{font-size:27px;color:var(--accent);font-weight:700;line-height:1}.timer.urgent{color:var(--danger)}.status{margin-top:18px;border-left:3px solid var(--accent);padding:13px 15px;background:rgba(var(--accent-rgb),.07);line-height:1.55;font-size:13px;min-height:49px}.status.error{border-left-color:var(--danger);color:#ffc8c8}.status.success{border-left-color:#8add93;color:#b6ffc0}.rules{margin-top:17px;color:var(--muted);font-size:12px;line-height:1.75}.rules strong{color:var(--text)}
+.overlay{position:fixed;inset:0;z-index:5;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(1,10,12,.79);backdrop-filter:blur(5px)}.overlay.open{display:flex}.modal{width:min(620px,100%);max-height:min(92vh,850px);overflow:auto;border:1px solid var(--accent);background:#10262a;padding:24px;box-shadow:0 0 50px rgba(var(--accent-rgb),.14)}.modalhead{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}.modal h2{font-size:22px;color:var(--accent);margin:0;letter-spacing:.09em}.close{border:1px solid var(--line);background:transparent;color:var(--text);width:38px;height:38px;font-size:23px}.settinggrid{display:grid;grid-template-columns:1fr 1fr;gap:20px 15px}.field{display:flex;flex-direction:column;gap:8px}.field label{font-size:12px;color:var(--gold);font-weight:700}.field select,.field input[type=number]{background:#06171b;border:1px solid #40656a;color:var(--text);padding:10px;width:100%;min-height:42px;border-radius:0}.checkline{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text);margin-top:6px}.checkline input{accent-color:var(--accent);width:17px;height:17px}.modalnote{font-size:11px;line-height:1.6;color:var(--muted);margin:16px 0 20px}.modalactions{display:flex;flex-wrap:wrap;gap:9px}.foot{margin-top:17px;color:#628689;font-size:11px;text-align:center}
+@media(max-width:760px){.dashboard{grid-template-columns:1fr}.shell{margin-top:20px}.panel{padding:15px}.matrix{gap:5px}.cell{font-size:clamp(12px,3.7vw,21px)}.slot{width:43px;height:43px}.settinggrid{grid-template-columns:1fr}.topbuttons{width:100%}.topbuttons .action{flex:1}}
+ .abilitychoices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.abilitychoice{display:flex;gap:9px;align-items:center;cursor:pointer;background:#081a1e;border:1px solid var(--line);padding:13px 9px;color:var(--text);font-size:12px}.abilitychoice:has(input:checked){border-color:var(--accent);background:rgba(var(--accent-rgb),.13)}.abilitychoice input{accent-color:var(--accent);width:17px;height:17px;flex-shrink:0}@media(max-width:520px){.abilitychoices{grid-template-columns:repeat(2,minmax(0,1fr))}}
+ .extraaction{margin-top:15px;padding-top:14px;border-top:1px solid var(--line)}.extraaction .hint{text-align:left;margin:8px 0 0}.extraaction .action:disabled{opacity:.38;cursor:not-allowed}.rollrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.rollrow select{background:#06171b;border:1px solid #40656a;color:var(--text);padding:9px;max-width:180px}.rollrow label{color:var(--gold);font-size:12px}.rollrow input{width:85px;padding:9px;background:#06171b;border:1px solid #40656a;color:var(--text)}
+
+/* Streamlined roll controls */
+.roll-panel .panelhead{margin-bottom:19px}
+.rollfields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 12px}
+.rollfields .field{min-width:0;gap:7px}
+.rollfields .field label,.extraform .field label{font-size:11px;letter-spacing:.04em;line-height:1.3}
+.rollfields input,.rollfields select,.extraform input{width:100%;max-width:none;min-width:0;height:45px;padding:10px 12px;border:1px solid #40656a;background:#06171b;color:var(--text);font-size:15px;border-radius:0}
+.rollfields select{font-size:13px}
+.apply-btn{margin-top:17px;width:100%}
+.rollstats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:19px}
+.rollstat{min-width:0;border:1px solid var(--line);background:rgba(3,16,20,.35);padding:13px}
+.rollstat .smalllabel{font-size:10px;letter-spacing:.10em;line-height:1.5}
+.rollstat .timer,.rollstat .statvalue{margin-top:8px;font-size:27px;color:var(--accent);font-weight:700;line-height:1.15}
+.rollnote{font-size:11px;line-height:1.65;color:var(--muted);margin:12px 0 0}
+.extraaction{margin-top:18px;padding-top:18px}
+.extraform{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:10px;margin-top:12px}
+.extraform .field{min-width:0;gap:7px}
+.extraform .action{white-space:nowrap;min-height:45px}
+.actionstats{display:flex;gap:7px 15px;justify-content:space-between;flex-wrap:wrap;color:var(--muted);font-size:11px;margin-top:13px;line-height:1.5}
+@media(max-width:420px){.rollfields{gap:12px 9px}.rollfields .field label{font-size:10px}.rollfields select{font-size:11px}.extraform{grid-template-columns:1fr}.extraform .action{width:100%}}
+
+/* Phone and tablet support */
+html{-webkit-text-size-adjust:100%;}
+button,input,select{touch-action:manipulation}
+.matrix-viewport{overflow-x:auto;max-width:100%;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.matrix{width:100%}
+.cell{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+@media (max-width:760px){
+  body{overflow-x:hidden}
+  .shell{width:calc(100% - 20px);margin:12px auto 24px}
+  .top{gap:12px}
+  .top h1{font-size:clamp(23px,6vw,33px);line-height:1.13;letter-spacing:.035em;margin:7px 0 0}
+  .eyebrow{font-size:9px;letter-spacing:.10em}
+  .topbuttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .action{font-size:11px;letter-spacing:.015em;min-height:46px;padding:10px 9px}
+  .dashboard{display:flex;flex-direction:column;gap:11px;margin-top:14px}
+  .rightstack{display:contents}
+  .roll-panel{order:0}
+  .dashboard > .panel{order:1}
+  .rightstack > .panel:nth-child(1){order:2}
+  .rightstack > .panel:nth-child(2){order:3}
+  .panel{padding:13px}
+  .panelhead{margin-bottom:12px}
+  .paneltitle{font-size:12px;letter-spacing:.07em}
+  .hint{font-size:10px}
+  .matrix{gap:4px}
+  .cell{font-size:clamp(13px,3.9vw,19px);border-width:1px;aspect-ratio:1}
+  .slot{width:39px;height:41px;font-size:13px}
+  .buffer{gap:5px}
+  .target{padding:10px}
+  .targetheader{font-size:11px}
+  .tokens{gap:5px}
+  .rollfields{gap:12px 10px}
+  .rollfields .field label{font-size:11px}
+  input,select{font-size:16px !important}
+  .rollfields input,.rollfields select,.extraform input{height:46px}
+  .rollstats{margin-top:13px;gap:8px}
+  .rollstat{padding:10px}
+  .rollstat .timer,.rollstat .statvalue{font-size:23px}
+  .extraaction{margin-top:13px;padding-top:13px}
+  .extraform{grid-template-columns:minmax(0,1fr) auto;gap:8px}
+  .extraform .action{min-width:106px}
+  .overlay{padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));align-items:center}
+  .modal{width:100%;padding:16px;max-height:90dvh;overscroll-behavior:contain}
+  .modalhead{margin-bottom:12px}
+  .modal h2{font-size:18px}
+  .abilitychoices{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .abilitychoice{padding:12px 8px;min-height:46px}
+  .modalactions .action{flex:1 1 40%}
+}
+@media (max-width:520px){
+  .matrix{min-width:calc(var(--size,5) * 39px + (var(--size,5) - 1) * 4px)}
+  .matrix-viewport{scrollbar-width:thin;scrollbar-color:var(--accent) transparent}
+  .cell{font-size:14px}
+  .rollfields{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .extraform{grid-template-columns:minmax(0,1fr) auto}
+  .extraform .action{width:auto}
+}
+@media (max-width:360px){
+  .topbuttons .action{font-size:10px}
+  .panel{padding:10px}
+  .rollfields .field label{font-size:10px}
+  .extraform .action{min-width:88px}
+}
+
+/* Mobile-edition default uses a narrow, phone-focused canvas even on wide screens. */
+@media(min-width:761px){
+ .shell{max-width:520px;margin:22px auto 40px}
+ .dashboard{display:flex;flex-direction:column;gap:12px}
+ .rightstack{display:contents}
+ .roll-panel{order:0}
+ .dashboard > .panel{order:1}
+ .rightstack > .panel:nth-child(1){order:2}
+ .rightstack > .panel:nth-child(2){order:3}
+ .top h1{font-size:28px}
+ .topbuttons{width:100%;display:grid;grid-template-columns:1fr 1fr}
+ .panel{padding:15px}
+ .matrix{gap:5px}
+ .cell{font-size:17px}
+}
+</style>
+</head>
+<body>
+<main class="shell">
+  <header class="top"><div><div class="eyebrow">// NETRUNNER INTERFACE · LOCAL SIMULATION</div><h1>NETRUNNER // INTERFACE PROTOCOL</h1></div><div class="topbuttons"><button class="action" id="abilitiesButton">◇ Change Abilities</button><button class="action primary" id="newButton">↻ New puzzle</button></div></header>
+  <section class="dashboard"><div class="panel"><div class="panelhead"><div class="paneltitle">CODE MATRIX</div><div class="hint" id="axisLabel">START: TOP ROW</div></div><div class="matrix-viewport"><div id="matrix" class="matrix" aria-label="Code matrix"></div></div></div>
+  <div class="rightstack"><section class="panel"><div class="panelhead"><span class="paneltitle">BUFFER</span><span id="bufferCount" class="hint">0 / 6</span></div><div class="buffer" id="buffer"></div></section><section class="panel"><div class="panelhead"><span class="paneltitle">INTERFACE ABILITIES</span><span class="hint" id="progressLabel">0 / 3 MATCHED</span></div><div class="targets" id="targets"></div></section><section class="panel roll-panel">
+  <div class="panelhead"><span class="paneltitle">NETRUNNING ROLL</span></div>
+  <div class="rollfields">
+    <div class="field"><label for="rollInput">Roll total</label><input type="number" id="rollInput" min="0" max="999" value="15"/></div>
+    <div class="field"><label for="dcInput">Difficulty / DC</label><select id="dcInput"><option value="9">Simple · DV 9</option><option value="13" selected>Everyday · DV 13</option><option value="15">Difficult · DV 15</option><option value="17">Professional · DV 17</option><option value="21">Heroic · DV 21</option><option value="24">Incredible · DV 24</option><option value="29">Legendary · DV 29</option></select></div>
+    <div class="field"><label for="interfaceInput">Interface skill</label><input type="number" id="interfaceInput" min="1" max="10" value="3"/></div>
+    <div class="field"><label for="abilityInput">Initial abilities</label><input type="number" id="abilityInput" min="1" max="9" value="3"/></div>
+  </div>
+  <button class="action primary apply-btn" id="setRoll">Apply values · New puzzle</button>
+  <div class="rollstats">
+    <div class="rollstat"><div class="smalllabel">Points remaining</div><div class="timer" id="pointsLeft">15</div></div>
+    <div class="rollstat"><div class="smalllabel">Cost per tile</div><div class="statvalue" id="tileCostLabel">1 point</div></div>
+  </div>
+  
+  <div class="extraaction">
+    <div class="smalllabel">Spend another action</div>
+    <div class="extraform"><div class="field"><label for="extraRollInput">Additional roll total</label><input type="number" id="extraRollInput" min="0" max="999" placeholder="Enter roll"/></div><button class="action" id="spendAction">+ Add roll</button></div>
+    <div class="actionstats"><span id="actionsSpent">Extra actions spent: 0</span><span id="rollPoolLabel">Total roll points: 15</span></div>
+    
+  </div>
+</section></div></section>
+
+</main>
+<div class="overlay" id="abilitiesOverlay" role="dialog" aria-modal="true" aria-labelledby="abilitiesTitle"><div class="modal"><div class="modalhead"><h2 id="abilitiesTitle">// SELECT INTERFACE ABILITIES</h2><button class="close" id="closeAbilities" aria-label="Close ability selection">×</button></div><p class="modalnote">Choose exactly which Interface Abilities are available in this run. Select any number from 1 to 9. These choices become the ability sequences on the board. Your selection is remembered on this device.</p><div class="abilitychoices" id="abilityChoices"></div><div class="modalnote" id="abilitySelectionCount">0 abilities selected</div><div class="modalactions"><button class="action primary" id="confirmAbilities">Start with selected abilities</button><button class="action" id="selectAllAbilities">Select all</button><button class="action" id="clearAbilities">Clear selection</button></div><p class="modalnote">Changing abilities will start a new puzzle and clear the current buffer. Your roll, DC, and Interface skill stay the same.</p></div></div>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+const abilities=['Scanner','Backdoor','Cloak','Control','Eye-Dee','Pathfinder','Slide','Virus','Zap'];
+const defaults={selectedAbilities:[...abilities]};
+const tiers=[{dc:9,name:"Simple",size:3,length:1},{dc:13,name:"Everyday",size:4,length:2},{dc:15,name:"Difficult",size:5,length:3},{dc:17,name:"Professional",size:6,length:4},{dc:21,name:"Heroic",size:7,length:5},{dc:24,name:"Incredible",size:8,length:6},{dc:29,name:"Legendary",size:9,length:7}];
+function tier(){return tiers.find(t=>t.dc===dcTotal)||tiers[1];}
+function gridSize(){return tier().size;}
+function bufferSize(){return interfaceSkill*2;}
+const codes=['1C','55','7A','BD','E9','FF','0A'];
+let settings={...defaults};try{const raw=JSON.parse(localStorage.getItem('breach-config')||'{}');settings={...settings,...raw};}catch{}
+function sanitize(){settings.selectedAbilities=Array.isArray(settings.selectedAbilities)?abilities.filter(a=>settings.selectedAbilities.includes(a)):[...abilities];if(!settings.selectedAbilities.length)settings.selectedAbilities=[...abilities];}sanitize();
+let board=[],path=[],picked=[],used=new Set(),targets=[],complete=[],finished=false,last=null,ctx=null,rollTotal=15,dcTotal=13,interfaceSkill=3,abilityAllowance=3,extraActions=0;
+const rand=n=>Math.floor(Math.random()*n);const shuffle=a=>{for(let i=a.length-1;i>0;i--){let j=rand(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;};
+function makePath(n,steps){const visited=new Set(),out=[];function walk(r,c){if(out.length===steps)return true;let possibles=[];if(out.length===0){for(let col=0;col<n;col++)possibles.push([0,col]);}else if(out.length%2===1){for(let row=0;row<n;row++)possibles.push([row,c]);}else{for(let col=0;col<n;col++)possibles.push([r,col]);}for(const [nr,nc] of shuffle(possibles)){const key=nr*n+nc;if(visited.has(key))continue;visited.add(key);out.push([nr,nc]);if(walk(nr,nc))return true;out.pop();visited.delete(key);}return false;}if(!walk(0,0))throw new Error('Unable to create puzzle path');return out;}
+function tilePrice(){return Math.max(1,Math.ceil(dcTotal/abilityAllowance));}
+function getTargets(solution){
+  const k=solution.length;
+  const chosen=settings.selectedAbilities;
+  const length=tier().length;
+  const maxStart=Math.max(0,k-length);
+  // Spread the selected abilities over an overlapping solution path.
+  // Multiple abilities can share code windows, especially with many abilities.
+  return chosen.map((name,i)=>{
+    const start=chosen.length===1?0:Math.round((i/(chosen.length-1))*maxStart);
+    return {name,seq:solution.slice(start,start+length)};
+  });
+}
+function setStatus(s,type=''){}
+function newGame(){extraActions=0;rollTotal=Math.max(0,Math.min(999,Math.floor(Number($('rollInput').value)||0)));const n=gridSize();board=Array.from({length:n},()=>Array.from({length:n},()=>codes[rand(codes.length)]));path=makePath(n,Math.min(n*n,Math.max(bufferSize(),tier().length)));const sol=path.map(([r,c])=>board[r][c]);targets=getTargets(sol);picked=[];used=new Set();last=null;finished=false;complete=targets.map(()=>false);setStatus(bufferSize()<tier().length?'Interface skill gives fewer buffer slots than the sequence length at this DC; completing an ability is impossible at this skill.':'Puzzle ready. Purchase a highlighted code from the top row.',bufferSize()<tier().length?'error':'');render();}
+function canPick(r,c){if(finished||pointsLeft()<tilePrice()||used.has(r*gridSize()+c))return false;if(!last)return r===0;return picked.length%2===1?c===last[1]:r===last[0];}
+function pointsLeft(){return Math.max(0,rollTotal-picked.length*tilePrice());}
+function setRoll(){rollTotal=Math.max(0,Math.min(999,Math.floor(Number($('rollInput').value)||0)));dcTotal=Number($('dcInput').value);interfaceSkill=Math.max(1,Math.min(10,Math.floor(Number($('interfaceInput').value)||1)));abilityAllowance=Math.max(1,Math.min(9,Math.floor(Number($('abilityInput').value)||1)));$('rollInput').value=rollTotal;$('interfaceInput').value=interfaceSkill;$('abilityInput').value=abilityAllowance;newGame();}
+function finish(win,msg){finished=true;setStatus(msg,win?'success':'error');render();}
+function pick(r,c){if(!canPick(r,c))return;last=[r,c];used.add(r*gridSize()+c);picked.push(board[r][c]);complete=targets.map(t=>matches(t.seq,picked));if(complete.every(Boolean)){finish(true,`INTERFACE SUCCESS — All ${targets.length} available ability sequences completed!`);return;}if(picked.length>=bufferSize()){finish(complete.some(Boolean),`${complete.filter(Boolean).length} interface abilities activated. Buffer exhausted.`);return;}const axis=picked.length%2===1?'COLUMN':'ROW';setStatus(`Code accepted. Select the next code in the highlighted ${axis.toLowerCase()}.`);render();if(!hasLegalPositionMove())finish(complete.some(Boolean),`${complete.filter(Boolean).length} abilities activated. No valid matrix moves remain.`);else if(pointsLeft()<tilePrice())setStatus('Not enough points to purchase another tile. Spend another action and enter a new roll to continue this puzzle.');}
+function matches(seq,arr){outer:for(let i=0;i<=arr.length-seq.length;i++){for(let j=0;j<seq.length;j++)if(arr[i+j]!==seq[j])continue outer;return true;}return false;}
+function hasLegalPositionMove(){for(let r=0;r<gridSize();r++)for(let c=0;c<gridSize();c++){if(used.has(r*gridSize()+c))continue;if(!last?r===0:picked.length%2===1?c===last[1]:r===last[0])return true;}return false;}
+function spendAction(){if(finished){setStatus('This puzzle has ended. Start a new puzzle to spend more actions.','error');return;}const field=$('extraRollInput');if(field.value.trim()===''||!Number.isFinite(Number(field.value))||!Number.isInteger(Number(field.value))||Number(field.value)<0||Number(field.value)>999){setStatus('Enter a whole new roll total between 0 and 999.','error');field.focus();return;}const amount=Number(field.value);extraActions++;rollTotal+=amount;field.value='';setStatus(`Extra action ${extraActions} spent: +${amount} roll points added. Your existing puzzle progress is preserved.`);render();}
+function render(){const n=gridSize(),m=$('matrix');m.style.setProperty('--size',n);m.replaceChildren();for(let r=0;r<n;r++)for(let c=0;c<n;c++){const el=document.createElement('button');el.className='cell';el.textContent=board[r][c];const usedCell=used.has(r*n+c),allowed=canPick(r,c);if(usedCell)el.classList.add('used');if(last&&last[0]===r&&last[1]===c)el.classList.add('selected');if(allowed)el.classList.add('available');el.disabled=!allowed;el.setAttribute('aria-label',`Row ${r+1}, column ${c+1}, code ${board[r][c]}${usedCell?', already used':''}`);el.addEventListener('click',()=>pick(r,c));m.appendChild(el);}
+const b=$('buffer');b.replaceChildren();for(let i=0;i<bufferSize();i++){const el=document.createElement('div');el.className='slot'+(i<picked.length?' filled':'');el.textContent=picked[i]||'--';b.appendChild(el);}$('bufferCount').textContent=`${picked.length} / ${bufferSize()}`;
+const t=$('targets');t.replaceChildren();targets.forEach((target,i)=>{const el=document.createElement('div');el.className='target'+(complete[i]?' done':'');const head=document.createElement('div');head.className='targetheader';const name=document.createElement('span');name.textContent=target.name;const state=document.createElement('span');state.textContent=complete[i]?'✓ UPLOADED':'PENDING';head.append(name,state);const tokens=document.createElement('div');tokens.className='tokens';target.seq.forEach(code=>{const x=document.createElement('span');x.className='token';x.textContent=code;tokens.appendChild(x);});el.append(head,tokens);t.appendChild(el);});$('progressLabel').textContent=`${complete.filter(Boolean).length} / ${targets.length} MATCHED`;
+$('axisLabel').textContent=finished?'BREACH COMPLETE':!last?'START: TOP ROW':picked.length%2===1?'NEXT: SAME COLUMN':'NEXT: SAME ROW';updatePoints();}
+function updatePoints(){$('pointsLeft').textContent=pointsLeft();$('tileCostLabel').textContent=tilePrice()+' point'+(tilePrice()===1?'':'s');$('actionsSpent').textContent=`Extra actions spent: ${extraActions}`;$('rollPoolLabel').textContent=`Total roll points: ${rollTotal}`;$('spendAction').disabled=finished;}
+function renderAbilityChoices(){
+  const parent=$('abilityChoices');parent.replaceChildren();
+  for(const ability of abilities){
+    const label=document.createElement('label');label.className='abilitychoice';
+    const check=document.createElement('input');check.type='checkbox';check.value=ability;check.checked=settings.selectedAbilities.includes(ability);
+    check.addEventListener('change',updateAbilityCount);
+    const text=document.createElement('span');text.textContent=ability;
+    label.append(check,text);parent.appendChild(label);
+  }
+  updateAbilityCount();
+}
+function selectedFromForm(){return [...$('abilityChoices').querySelectorAll('input:checked')].map(x=>x.value);}
+function updateAbilityCount(){const count=selectedFromForm().length;$('abilitySelectionCount').textContent=`${count} of ${abilities.length} abilities selected`;$('confirmAbilities').disabled=count===0;}
+let initialAbilitySelection=true;
+function openAbilities(startup=false){initialAbilitySelection=startup;renderAbilityChoices();$('abilitiesOverlay').classList.add('open');$('closeAbilities').hidden=startup;$('confirmAbilities').textContent=startup?'Launch puzzle':'Apply & new puzzle';$('confirmAbilities').focus();}
+function closeAbilities(){if(initialAbilitySelection)return;$('abilitiesOverlay').classList.remove('open');$('abilitiesButton').focus();}
+$('abilitiesButton').addEventListener('click',()=>openAbilities(false));
+$('closeAbilities').addEventListener('click',closeAbilities);
+$('abilitiesOverlay').addEventListener('click',e=>{if(e.target===$('abilitiesOverlay'))closeAbilities();});
+$('selectAllAbilities').addEventListener('click',()=>{$('abilityChoices').querySelectorAll('input').forEach(x=>x.checked=true);updateAbilityCount();});
+$('clearAbilities').addEventListener('click',()=>{$('abilityChoices').querySelectorAll('input').forEach(x=>x.checked=false);updateAbilityCount();});
+$('confirmAbilities').addEventListener('click',()=>{const chosen=selectedFromForm();if(!chosen.length)return;settings.selectedAbilities=chosen;try{localStorage.setItem('breach-config',JSON.stringify(settings));}catch{}initialAbilitySelection=false;$('abilitiesOverlay').classList.remove('open');newGame();});
+$('spendAction').addEventListener('click',spendAction);$('extraRollInput').addEventListener('keydown',e=>{if(e.key==='Enter')spendAction();});$('setRoll').addEventListener('click',setRoll);['rollInput','dcInput','abilityInput','interfaceInput'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter')setRoll();}));$('newButton').addEventListener('click',newGame);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('abilitiesOverlay').classList.contains('open'))closeAbilities();});
+newGame();openAbilities(true);
+})();
+</script>
+</body>
+</html>
